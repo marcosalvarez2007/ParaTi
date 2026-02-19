@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Juego de Amor ❤️</title>
+<title>Osito del Amor 🧸❤️</title>
 
 <style>
 body{
@@ -21,6 +21,7 @@ body{
     padding:15px;
     color:white;
     font-weight:bold;
+    z-index:10;
 }
 
 .level{
@@ -38,41 +39,56 @@ body{
 .heart{
     position:absolute;
     font-size:25px;
-    cursor:pointer;
     animation:fall linear;
 }
 
 @keyframes fall{
-    from{transform:translateY(-50px);}
+    from{transform:translateY(-40px);}
     to{transform:translateY(100vh);}
+}
+
+#bear{
+    position:absolute;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:50px;
 }
 
 .card{
     position:absolute;
-    bottom:120px;
+    top:50%;
     left:50%;
-    transform:translateX(-50%);
+    transform:translate(-50%,-50%);
     background:white;
-    padding:20px;
+    padding:25px;
     border-radius:20px;
     width:80%;
     max-width:350px;
     text-align:center;
-    box-shadow:0 10px 25px rgba(0,0,0,0.2);
-    animation:fadeIn 0.8s ease;
+    box-shadow:0 10px 25px rgba(0,0,0,0.3);
+    display:none;
+    animation:fadeIn 0.6s ease;
+    z-index:20;
 }
 
 .card h2{
     color:#ff4d6d;
 }
 
-.card p{
-    color:#555;
+.card button{
+    margin-top:15px;
+    padding:10px 20px;
+    border:none;
+    border-radius:20px;
+    background:#ff4d6d;
+    color:white;
+    cursor:pointer;
 }
 
 @keyframes fadeIn{
-    from{opacity:0; transform:translate(-50%,20px);}
-    to{opacity:1; transform:translate(-50%,0);}
+    from{opacity:0; transform:translate(-50%,-40%);}
+    to{opacity:1; transform:translate(-50%,-50%);}
 }
 </style>
 </head>
@@ -84,68 +100,92 @@ body{
     <div class="level" id="level">Nivel 1</div>
 </div>
 
-<div id="gameArea"></div>
+<div id="gameArea">
+    <div id="bear">🧸</div>
+</div>
 
-<div class="card">
+<div class="card" id="card">
     <h2 id="title">1. El Comienzo</h2>
     <p id="text">Me encanta cómo iluminas mis días con solo existir.</p>
+    <button onclick="closeCard()">Continuar ❤️</button>
 </div>
 
 <script>
 let score = 0;
 let level = 1;
+let playing = true;
 
 const messages = [
-    {
-        title:"1. El Comienzo",
-        text:"Me encanta cómo iluminas mis días con solo existir."
-    },
-    {
-        title:"2. La Conexión",
-        text:"Cada momento contigo se siente especial."
-    },
-    {
-        title:"3. Más que Palabras",
-        text:"Tu sonrisa puede cambiar cualquier día gris."
-    },
-    {
-        title:"4. Amor Real",
-        text:"Contigo todo se siente más bonito ❤️"
-    }
+    {title:"1. El Comienzo", text:"Me encanta cómo iluminas mis días con solo existir."},
+    {title:"2. La Conexión", text:"Cada momento contigo se siente especial."},
+    {title:"3. Más que Palabras", text:"Tu sonrisa puede cambiar cualquier día gris."},
+    {title:"4. Amor Real", text:"Contigo todo se siente más bonito ❤️"}
 ];
 
+const bear = document.getElementById("bear");
+const gameArea = document.getElementById("gameArea");
+
+document.addEventListener("mousemove", moveBear);
+document.addEventListener("touchmove", e=>{
+    moveBear(e.touches[0]);
+});
+
+function moveBear(e){
+    let x = e.clientX;
+    bear.style.left = x - 25 + "px";
+}
+
 function createHeart(){
+    if(!playing) return;
+
     const heart = document.createElement("div");
     heart.classList.add("heart");
     heart.innerHTML = "💖";
     heart.style.left = Math.random() * 90 + "%";
-    heart.style.animationDuration = (3 + Math.random() * 2) + "s";
+    heart.style.animationDuration = (3 + Math.random()*2) + "s";
 
-    heart.onclick = function(){
-        score++;
-        document.getElementById("score").innerText = "Corazones: " + score + " / 10";
-        heart.remove();
-        checkLevel();
-    };
+    gameArea.appendChild(heart);
 
-    document.getElementById("gameArea").appendChild(heart);
+    let fallInterval = setInterval(()=>{
+        const heartRect = heart.getBoundingClientRect();
+        const bearRect = bear.getBoundingClientRect();
 
-    setTimeout(()=>{ heart.remove(); },5000);
+        if(
+            heartRect.bottom >= bearRect.top &&
+            heartRect.left < bearRect.right &&
+            heartRect.right > bearRect.left
+        ){
+            score++;
+            document.getElementById("score").innerText = "Corazones: " + score + " / 10";
+            heart.remove();
+            clearInterval(fallInterval);
+            checkLevel();
+        }
+    },50);
+
+    setTimeout(()=>{ heart.remove(); clearInterval(fallInterval); },5000);
 }
 
 function checkLevel(){
     if(score >= 10){
-        score = 0;
-        if(level < messages.length){
-            level++;
-            document.getElementById("title").innerText = messages[level-1].title;
-            document.getElementById("text").innerText = messages[level-1].text;
-            document.getElementById("level").innerText = "Nivel " + level;
-            document.getElementById("score").innerText = "Corazones: 0 / 10";
-        }else{
-            alert("❤️ Terminaste todos los niveles ❤️");
-        }
+        playing = false;
+        document.getElementById("card").style.display = "block";
+        document.getElementById("title").innerText = messages[level-1].title;
+        document.getElementById("text").innerText = messages[level-1].text;
     }
+}
+
+function closeCard(){
+    document.getElementById("card").style.display = "none";
+    score = 0;
+    if(level < messages.length){
+        level++;
+        document.getElementById("level").innerText = "Nivel " + level;
+    }else{
+        alert("❤️ Completaste todos los niveles ❤️");
+    }
+    document.getElementById("score").innerText = "Corazones: 0 / 10";
+    playing = true;
 }
 
 setInterval(createHeart,800);
