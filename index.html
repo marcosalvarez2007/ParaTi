@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Niveles de Amor ❤️</title>
+
+<style>
+body{
+    margin:0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(180deg,#ffd6d6,#ffb3b3);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    overflow:hidden;
+}
+
+.container{
+    text-align:center;
+    width:90%;
+    max-width:400px;
+    position:relative;
+}
+
+.top-bar{
+    display:flex;
+    justify-content:space-between;
+    font-weight:bold;
+    color:white;
+    margin-bottom:20px;
+}
+
+.level-badge{
+    background:#ff6b6b;
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:14px;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.15);
+    animation:fadeIn 0.8s ease;
+}
+
+.card h2{
+    color:#ff6b6b;
+    margin-bottom:10px;
+}
+
+.card p{
+    color:#555;
+    font-size:16px;
+}
+
+button{
+    margin-top:20px;
+    padding:12px 25px;
+    border:none;
+    border-radius:25px;
+    background:#ff6b6b;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+.heart{
+    position:absolute;
+    font-size:20px;
+    animation:float 4s infinite ease-in-out;
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+@keyframes float{
+    0%{transform:translateY(0);}
+    50%{transform:translateY(-15px);}
+    100%{transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top-bar">
+        <div id="hearts">Corazones: 7 / 10</div>
+        <div class="level-badge" id="level">Nivel 1</div>
+    </div>
+
+    <div class="card">
+        <h2 id="title">1. El Comienzo</h2>
+        <p id="text">Me encanta cómo iluminas mis días con solo existir.</p>
+        <button onclick="nextLevel()">Siguiente Nivel ❤️</button>
+    </div>
+
+    <div class="heart" style="top:10%; left:5%;">💖</div>
+    <div class="heart" style="top:70%; right:5%;">✨</div>
+    <div class="heart" style="bottom:5%; left:40%;">🐻</div>
+
+</div>
+
+<script>
+let level = 1;
+let hearts = 7;
+
+const messages = [
+    {
+        title: "1. El Comienzo",
+        text: "Me encanta cómo iluminas mis días con solo existir."
+    },
+    {
+        title: "2. La Conexión",
+        text: "Cada conversación contigo se siente especial y única."
+    },
+    {
+        title: "3. Más que Palabras",
+        text: "Tu sonrisa puede cambiar cualquier día gris."
+    },
+    {
+        title: "4. Sentimiento Real",
+        text: "Contigo todo se siente más bonito."
+    }
+];
+
+function nextLevel(){
+    if(level < messages.length){
+        level++;
+        hearts++;
+
+        document.getElementById("title").innerText = messages[level-1].title;
+        document.getElementById("text").innerText = messages[level-1].text;
+        document.getElementById("level").innerText = "Nivel " + level;
+        document.getElementById("hearts").innerText = "Corazones: " + hearts + " / 10";
+
+        document.querySelector(".card").style.animation = "none";
+        void document.querySelector(".card").offsetWidth;
+        document.querySelector(".card").style.animation = "fadeIn 0.6s ease";
+    }else{
+        alert("❤️ Llegaste al último nivel ❤️");
+    }
+}
+</script>
+
+</body>
+</html>
