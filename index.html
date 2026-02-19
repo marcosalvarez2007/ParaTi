@@ -2,13 +2,22 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Osito del Amor 🧸❤️</title>
 
 <style>
-body{
+*{
     margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body{
+    width:100%;
+    height:100%;
     overflow:hidden;
+    touch-action:none;
     font-family:Arial, sans-serif;
     background: linear-gradient(180deg,#ffc1c1,#ff9e9e);
 }
@@ -33,7 +42,7 @@ body{
 #gameArea{
     position:relative;
     width:100%;
-    height:100vh;
+    height:100%;
 }
 
 .heart{
@@ -44,7 +53,7 @@ body{
 
 @keyframes fall{
     from{transform:translateY(-40px);}
-    to{transform:translateY(100vh);}
+    to{transform:translateY(110vh);}
 }
 
 #bear{
@@ -52,7 +61,8 @@ body{
     bottom:20px;
     left:50%;
     transform:translateX(-50%);
-    font-size:50px;
+    font-size:55px;
+    transition:left 0.05s linear;
 }
 
 .card{
@@ -63,12 +73,11 @@ body{
     background:white;
     padding:25px;
     border-radius:20px;
-    width:80%;
+    width:85%;
     max-width:350px;
     text-align:center;
     box-shadow:0 10px 25px rgba(0,0,0,0.3);
     display:none;
-    animation:fadeIn 0.6s ease;
     z-index:20;
 }
 
@@ -83,12 +92,6 @@ body{
     border-radius:20px;
     background:#ff4d6d;
     color:white;
-    cursor:pointer;
-}
-
-@keyframes fadeIn{
-    from{opacity:0; transform:translate(-50%,-40%);}
-    to{opacity:1; transform:translate(-50%,-50%);}
 }
 </style>
 </head>
@@ -125,14 +128,23 @@ const messages = [
 const bear = document.getElementById("bear");
 const gameArea = document.getElementById("gameArea");
 
-document.addEventListener("mousemove", moveBear);
-document.addEventListener("touchmove", e=>{
-    moveBear(e.touches[0]);
+gameArea.addEventListener("touchmove", e=>{
+    if(!playing) return;
+    const touch = e.touches[0];
+    moveBear(touch.clientX);
 });
 
-function moveBear(e){
-    let x = e.clientX;
-    bear.style.left = x - 25 + "px";
+gameArea.addEventListener("mousemove", e=>{
+    if(!playing) return;
+    moveBear(e.clientX);
+});
+
+function moveBear(x){
+    const maxWidth = window.innerWidth - 60;
+    let pos = x - 30;
+    if(pos < 0) pos = 0;
+    if(pos > maxWidth) pos = maxWidth;
+    bear.style.left = pos + "px";
 }
 
 function createHeart(){
@@ -146,24 +158,24 @@ function createHeart(){
 
     gameArea.appendChild(heart);
 
-    let fallInterval = setInterval(()=>{
-        const heartRect = heart.getBoundingClientRect();
-        const bearRect = bear.getBoundingClientRect();
+    let check = setInterval(()=>{
+        const h = heart.getBoundingClientRect();
+        const b = bear.getBoundingClientRect();
 
         if(
-            heartRect.bottom >= bearRect.top &&
-            heartRect.left < bearRect.right &&
-            heartRect.right > bearRect.left
+            h.bottom >= b.top &&
+            h.left < b.right &&
+            h.right > b.left
         ){
             score++;
             document.getElementById("score").innerText = "Corazones: " + score + " / 10";
             heart.remove();
-            clearInterval(fallInterval);
+            clearInterval(check);
             checkLevel();
         }
     },50);
 
-    setTimeout(()=>{ heart.remove(); clearInterval(fallInterval); },5000);
+    setTimeout(()=>{ heart.remove(); clearInterval(check); },5000);
 }
 
 function checkLevel(){
