@@ -3,157 +3,152 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Niveles de Amor ❤️</title>
+<title>Juego de Amor ❤️</title>
 
 <style>
 body{
     margin:0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(180deg,#ffd6d6,#ffb3b3);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
     overflow:hidden;
+    font-family:Arial, sans-serif;
+    background: linear-gradient(180deg,#ffc1c1,#ff9e9e);
 }
 
-.container{
-    text-align:center;
-    width:90%;
-    max-width:400px;
-    position:relative;
-}
-
-.top-bar{
+.top{
+    position:absolute;
+    width:100%;
     display:flex;
     justify-content:space-between;
+    padding:15px;
+    color:white;
     font-weight:bold;
-    color:white;
-    margin-bottom:20px;
 }
 
-.level-badge{
-    background:#ff6b6b;
-    padding:5px 12px;
+.level{
+    background:#ff4d6d;
+    padding:5px 15px;
     border-radius:20px;
-    font-size:14px;
 }
 
-.card{
-    background:white;
-    padding:25px;
-    border-radius:20px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.15);
-    animation:fadeIn 0.8s ease;
-}
-
-.card h2{
-    color:#ff6b6b;
-    margin-bottom:10px;
-}
-
-.card p{
-    color:#555;
-    font-size:16px;
-}
-
-button{
-    margin-top:20px;
-    padding:12px 25px;
-    border:none;
-    border-radius:25px;
-    background:#ff6b6b;
-    color:white;
-    font-size:16px;
-    cursor:pointer;
-    transition:0.3s;
-}
-
-button:hover{
-    transform:scale(1.05);
-    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+#gameArea{
+    position:relative;
+    width:100%;
+    height:100vh;
 }
 
 .heart{
     position:absolute;
-    font-size:20px;
-    animation:float 4s infinite ease-in-out;
+    font-size:25px;
+    cursor:pointer;
+    animation:fall linear;
+}
+
+@keyframes fall{
+    from{transform:translateY(-50px);}
+    to{transform:translateY(100vh);}
+}
+
+.card{
+    position:absolute;
+    bottom:120px;
+    left:50%;
+    transform:translateX(-50%);
+    background:white;
+    padding:20px;
+    border-radius:20px;
+    width:80%;
+    max-width:350px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    animation:fadeIn 0.8s ease;
+}
+
+.card h2{
+    color:#ff4d6d;
+}
+
+.card p{
+    color:#555;
 }
 
 @keyframes fadeIn{
-    from{opacity:0; transform:translateY(20px);}
-    to{opacity:1; transform:translateY(0);}
-}
-
-@keyframes float{
-    0%{transform:translateY(0);}
-    50%{transform:translateY(-15px);}
-    100%{transform:translateY(0);}
+    from{opacity:0; transform:translate(-50%,20px);}
+    to{opacity:1; transform:translate(-50%,0);}
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="top">
+    <div id="score">Corazones: 0 / 10</div>
+    <div class="level" id="level">Nivel 1</div>
+</div>
 
-    <div class="top-bar">
-        <div id="hearts">Corazones: 7 / 10</div>
-        <div class="level-badge" id="level">Nivel 1</div>
-    </div>
+<div id="gameArea"></div>
 
-    <div class="card">
-        <h2 id="title">1. El Comienzo</h2>
-        <p id="text">Me encanta cómo iluminas mis días con solo existir.</p>
-        <button onclick="nextLevel()">Siguiente Nivel ❤️</button>
-    </div>
-
-    <div class="heart" style="top:10%; left:5%;">💖</div>
-    <div class="heart" style="top:70%; right:5%;">✨</div>
-    <div class="heart" style="bottom:5%; left:40%;">🐻</div>
-
+<div class="card">
+    <h2 id="title">1. El Comienzo</h2>
+    <p id="text">Me encanta cómo iluminas mis días con solo existir.</p>
 </div>
 
 <script>
+let score = 0;
 let level = 1;
-let hearts = 7;
 
 const messages = [
     {
-        title: "1. El Comienzo",
-        text: "Me encanta cómo iluminas mis días con solo existir."
+        title:"1. El Comienzo",
+        text:"Me encanta cómo iluminas mis días con solo existir."
     },
     {
-        title: "2. La Conexión",
-        text: "Cada conversación contigo se siente especial y única."
+        title:"2. La Conexión",
+        text:"Cada momento contigo se siente especial."
     },
     {
-        title: "3. Más que Palabras",
-        text: "Tu sonrisa puede cambiar cualquier día gris."
+        title:"3. Más que Palabras",
+        text:"Tu sonrisa puede cambiar cualquier día gris."
     },
     {
-        title: "4. Sentimiento Real",
-        text: "Contigo todo se siente más bonito."
+        title:"4. Amor Real",
+        text:"Contigo todo se siente más bonito ❤️"
     }
 ];
 
-function nextLevel(){
-    if(level < messages.length){
-        level++;
-        hearts++;
+function createHeart(){
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML = "💖";
+    heart.style.left = Math.random() * 90 + "%";
+    heart.style.animationDuration = (3 + Math.random() * 2) + "s";
 
-        document.getElementById("title").innerText = messages[level-1].title;
-        document.getElementById("text").innerText = messages[level-1].text;
-        document.getElementById("level").innerText = "Nivel " + level;
-        document.getElementById("hearts").innerText = "Corazones: " + hearts + " / 10";
+    heart.onclick = function(){
+        score++;
+        document.getElementById("score").innerText = "Corazones: " + score + " / 10";
+        heart.remove();
+        checkLevel();
+    };
 
-        document.querySelector(".card").style.animation = "none";
-        void document.querySelector(".card").offsetWidth;
-        document.querySelector(".card").style.animation = "fadeIn 0.6s ease";
-    }else{
-        alert("❤️ Llegaste al último nivel ❤️");
+    document.getElementById("gameArea").appendChild(heart);
+
+    setTimeout(()=>{ heart.remove(); },5000);
+}
+
+function checkLevel(){
+    if(score >= 10){
+        score = 0;
+        if(level < messages.length){
+            level++;
+            document.getElementById("title").innerText = messages[level-1].title;
+            document.getElementById("text").innerText = messages[level-1].text;
+            document.getElementById("level").innerText = "Nivel " + level;
+            document.getElementById("score").innerText = "Corazones: 0 / 10";
+        }else{
+            alert("❤️ Terminaste todos los niveles ❤️");
+        }
     }
 }
+
+setInterval(createHeart,800);
 </script>
 
 </body>
